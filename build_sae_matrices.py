@@ -229,11 +229,11 @@ for jpath, mpath in zip(jsonl_files, meta_files):
                 success_tids.append(tid) 
             except Exception as e:
                 logger.exception(f"Doc {tid} in {prefix} failed: {e}")
-                D = params["W_enc"].shape[1]
-                feats_mean.append(np.full(D, np.nan))
-                feats_max.append(np.full(D, np.nan))
-                feats_sum.append(np.full(D, np.nan))
-                feats_last.append(np.full(D, np.nan))
+                # D = params["W_enc"].shape[1]
+                # feats_mean.append(np.full(D, np.nan))
+                # feats_max.append(np.full(D, np.nan))
+                # feats_sum.append(np.full(D, np.nan))
+                # feats_last.append(np.full(D, np.nan))
                 # feats_concat.append(np.full(2*D, np.nan))
             finally:
                 # Free GPU memory per-doc
@@ -257,7 +257,7 @@ for jpath, mpath in zip(jsonl_files, meta_files):
             X_max         = X_max,
             X_last        = X_last,
             token_counts  = token_counts,
-            transcriptids = np.array(tids, dtype=str)
+            transcriptids = np.array(success_tids, dtype=str)
         )
         logger.info(f"Saved .npz for {prefix}")
 
