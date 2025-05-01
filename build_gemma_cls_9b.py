@@ -9,7 +9,7 @@ from transformers import AutoModel, AutoTokenizer
 from huggingface_hub import hf_hub_download
 
 # ——— 1. Single device definition ———
-device = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 logging.basicConfig(
     filename="cls_processing.log",
@@ -56,7 +56,7 @@ input_dir = "./data/train_test_data"
 jsonl_files = [os.path.join(input_dir, fn) for fn in jsonl_files]
 meta_files = [os.path.join(input_dir, fn) for fn in meta_files]
 
-output_dir = "./data/doc_features"
+output_dir = "./data/doc_features/gemma_9b_cls"
 os.makedirs(output_dir, exist_ok=True)
 
 def process_jsonl(path):
@@ -112,9 +112,8 @@ for jpath, mpath in zip(jsonl_files, meta_files):
                 with torch.no_grad():
                     outputs = model(**inputs)
                 hidden = outputs.last_hidden_state  # (1, seq_len, hidden_size)
-                # ←—— NEW: last-token code
-                # CLS token (first position)
-                cls_vec = hidden[:, 0, :].cpu().numpy().squeeze(0)
+    
+                cls_vec = hidden[:, -1, :].cpu().numpy().squeeze(0)
                 # Mean pooling over sequence
                 mean_vec = hidden.mean(dim=1).cpu().numpy().squeeze(0)
 
